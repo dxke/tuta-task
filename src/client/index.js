@@ -56,7 +56,8 @@ inputURL.addEventListener("input", async () => {
       const result = await response.json();
       pResult.textContent = result.message;
     } catch (error) {
-      pResult.textContent = "Error connecting to server";
+      pResult.textContent =
+        "Error connecting to server. Please start the server and try again.";
     }
   }, 1000);
 });
