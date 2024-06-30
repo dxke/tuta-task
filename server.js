@@ -8,6 +8,18 @@ const PORT = 8000;
 
 const server = http.createServer((req, res) => {
   if (req.method === "POST" && req.url === "/check-url") {
+    // Set CORS headers
+    res.setHeader("Access-Control-Allow-Origin", "*"); // security risk in production
+    res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+    // Handle preflight requests
+    if (req.method === "OPTIONS") {
+      res.writeHead(204);
+      res.end();
+      return;
+    }
+
     // get the URL from the request body
     let body = "";
     req.on("data", (chunk) => {
