@@ -19,7 +19,33 @@ const server = http.createServer((req, res) => {
       const { url: inputUrl } = JSON.parse(body);
       const parsedUrl = new URL(inputUrl);
       const pathname = path.join(__dirname, parsedUrl.pathname);
+      fs.stat(pathname, (err, stats) => {
+        if (err) {
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              message: "URL does not point to a file or folder",
+            })
+          );
+          return;
+        }
+
+        let message;
+        if (stats.isFile()) {
+          message = `File exists: ${pathname}`;
+        } else if (stats.isDirectory()) {
+          message = `Directory exists: ${pathname}`;
+        } else {
+          message = "URL does not point to a file or folder that exists.";
+        }
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ message }));
+      });
     });
+  } else {
+    res.writeHead(404, { "Content-Type": "text/plain" });
+    res.end("Not Found");
   }
 });
 
