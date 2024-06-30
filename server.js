@@ -6,6 +6,7 @@ const path = require("path");
 
 const PORT = 8000;
 
+// create a server
 const server = http.createServer((req, res) => {
   // Set CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*"); // allow requests from any origin (JUST FOR DEVELOPMENT)
@@ -19,6 +20,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // handle POST request to /check-url
   if (req.method === "POST" && req.url === "/check-url") {
     // read the body of the request
     let body = "";
