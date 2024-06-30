@@ -19,6 +19,8 @@ const server = http.createServer((req, res) => {
       const { url: inputUrl } = JSON.parse(body);
       const parsedUrl = new URL(inputUrl);
       const pathname = path.join(__dirname, parsedUrl.pathname);
+
+      // error handling for invalid URL
       fs.stat(pathname, (err, stats) => {
         if (err) {
           res.writeHead(200, { "Content-Type": "application/json" });
@@ -31,6 +33,7 @@ const server = http.createServer((req, res) => {
         }
 
         let message;
+        //check if file or directory exists or not
         if (stats.isFile()) {
           message = `File exists: ${pathname}`;
         } else if (stats.isDirectory()) {
@@ -38,7 +41,7 @@ const server = http.createServer((req, res) => {
         } else {
           message = "URL does not point to a file or folder that exists.";
         }
-
+        // send the response
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ message }));
       });
