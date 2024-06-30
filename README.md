@@ -36,18 +36,18 @@ index.html im dist/ directory öffnen
 
 Im input-Feld eingeben:
 
-# http://localhost:8000/example-folder/
+### http://localhost:8000/example-folder/
 
 Ergebnis: _Directory exists: ..._
 
-# http://localhost:8000/example-folder/example.html
+### http://localhost:8000/example-folder/example.html
 
 Ergebnis: _File exists: ..._
 
-# http://localhost:8000/example-folder/example
+### http://localhost:8000/example-folder/example
 
 Ergebnis: _URL does not point to a file or folder_
 
-# anyinputthatsnotaURL
+### anyinputthatsnotaURL
 
 Ergebnis: _Invalid URL format_
