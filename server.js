@@ -4,7 +4,7 @@ const fs = require("fs");
 const url = require("url");
 const path = require("path");
 
-require("./serverModules.js").setCORSHeaders;
+const { setCORSHeaders, handleError } = require("./serverModules.js");
 
 const PORT = 8000;
 
@@ -41,16 +41,9 @@ const server = http.createServer((req, res) => {
           pathname,
           (err, stats) => {
             if (err) {
-              res.writeHead(404, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({
-                  message: "URL does not point to a file or folder",
-                })
-              );
+              handleError(res, 404);
               return;
             }
-
-            let message;
             // check if URL points to a file or folder
             if (stats.isFile() || stats.isDirectory()) {
               // send response
@@ -62,9 +55,6 @@ const server = http.createServer((req, res) => {
                   path: pathname,
                 })
               );
-            } else {
-              res.writeHead(404, { "Content-Type": "text/plain" });
-              res.end(JSON.stringify({ code: 404 }));
             }
           },
           500
