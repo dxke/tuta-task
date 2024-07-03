@@ -26,10 +26,15 @@ Bei der Entwicklung des Projekts habe ich bewusst darauf geachtet, möglichst we
 ## Wie kann man dieses Projekt verwenden:
 
 Node.js installieren
+
 zum root directory dieses Projekts gehen
+
 ausführen: _npm install_ um die dependencies zu installieren die in package.json gelistet sind
+
 das project via webpack builden: _npm run build_
+
 server starten via _node server_
+
 index.html im dist/ directory öffnen
 
 ## Wie kann dieses Projekt getestet werden:
