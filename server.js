@@ -4,14 +4,14 @@ const fs = require("fs");
 const url = require("url");
 const path = require("path");
 
+require("./serverModules.js").setCORSHeaders;
+
 const PORT = 8000;
 
 // create a server
 const server = http.createServer((req, res) => {
   // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*"); // allow requests from any origin (JUST FOR DEVELOPMENT)
-  res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  setCORSHeaders(res);
 
   // Handle preflight requests
   if (req.method === "OPTIONS") {
