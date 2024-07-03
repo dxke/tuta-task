@@ -67,3 +67,20 @@ inputURL.addEventListener("input", async () => {
     }, 1000);
   }
 });
+
+const result = await response.json();
+let message;
+switch (result.code) {
+  case 200:
+    message =
+      result.type === "file"
+        ? `File exists: ${result.path}`
+        : `Directory exists: ${result.path}`;
+    break;
+  case 404:
+    message = "URL does not point to a file or folder that exists.";
+    break;
+  default:
+    message = "An unknown error occurred. Please try again.";
+}
+pResult.textContent = message;
