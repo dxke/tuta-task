@@ -3,7 +3,6 @@ const http = require("http");
 const fs = require("fs");
 const url = require("url");
 const path = require("path");
-
 const { setCORSHeaders, handleError } = require("./serverModules.js");
 
 const PORT = 8000;
