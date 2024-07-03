@@ -35,30 +35,33 @@ const server = http.createServer((req, res) => {
       const pathname = path.join(__dirname, parsedUrl.pathname);
 
       // first: error handling
-      fs.stat(pathname, (err, stats) => {
-        if (err) {
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(
-            JSON.stringify({
-              message: "URL does not point to a file or folder",
-            })
-          );
-          return;
-        }
 
-        let message;
-        // check if URL points to a file or folder
-        if (stats.isFile()) {
-          message = `File exists: ${pathname}`;
-        } else if (stats.isDirectory()) {
-          message = `Directory exists: ${pathname}`;
-        } else {
-          message = "URL does not point to a file or folder that exists.";
-        }
-        // send response
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message }));
-      });
+      setTimeout(() => {
+        fs.stat(pathname, (err, stats) => {
+          if (err) {
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                message: "URL does not point to a file or folder",
+              })
+            );
+            return;
+          }
+
+          let message;
+          // check if URL points to a file or folder
+          if (stats.isFile()) {
+            message = `File exists: ${pathname}`;
+          } else if (stats.isDirectory()) {
+            message = `Directory exists: ${pathname}`;
+          } else {
+            message = "URL does not point to a file or folder that exists.";
+          }
+          // send response
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ message }));
+        });
+      }, 500);
     });
   } else {
     res.writeHead(404, { "Content-Type": "text/plain" });

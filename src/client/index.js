@@ -45,7 +45,7 @@ inputURL.addEventListener("input", async () => {
     return;
   } else {
     // change the text while waiting for the server response
-    pResult.textContent = "waiting for server response...";
+    pResult.textContent = "URL changed - waiting for server response...";
     pResult.style.color = "grey";
     timeoutId = setTimeout(async () => {
       // make a POST request to the server to check the URL
