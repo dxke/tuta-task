@@ -31,21 +31,27 @@ const server = http.createServer((req, res) => {
     req.on("end", () => {
       const { url: inputUrl } = JSON.parse(body);
       const parsedUrl = new URL(inputUrl);
-      const pathname = path.join(__dirname, parsedUrl.pathname);
 
-      // first: error handling
+      // server response if URL is not within allowed hostnames
+      const allowedHostnames = ["localhost", "127.0.0.1"]; // Add your server's IP here if needed
+      if (!allowedHostnames.includes(parsedUrl.hostname)) {
+        handleError(res, 403);
+        return;
+      }
+      const pathname = path.join(__dirname, parsedUrl.pathname);
 
       setTimeout(() => {
         fs.stat(
           pathname,
           (err, stats) => {
+            // server response if URL does not point to a file or folder
             if (err) {
               handleError(res, 404);
               return;
             }
             // check if URL points to a file or folder
             if (stats.isFile() || stats.isDirectory()) {
-              // send response
+              // server response if URL points to a file or folder
               res.writeHead(200, { "Content-Type": "application/json" });
               res.end(
                 JSON.stringify({
@@ -56,7 +62,7 @@ const server = http.createServer((req, res) => {
               );
             }
           },
-          500
+          500 // simulate server delay
         );
       });
     });
