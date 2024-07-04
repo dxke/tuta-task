@@ -74,7 +74,7 @@ inputURL.addEventListener("input", async () => {
           // if URL does not point to a file or folder
           case 404:
             message = "URL does not point to a file or folder that exists.";
-            pResult.style.color = "lightcoral";
+            pResult.style.color = "coral";
             break;
           // other errors
           default:
