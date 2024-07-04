@@ -3,15 +3,14 @@ const http = require("http");
 const fs = require("fs");
 const url = require("url");
 const path = require("path");
+const { setCORSHeaders, handleError } = require("./serverModules.js");
 
 const PORT = 8000;
 
 // create a server
 const server = http.createServer((req, res) => {
   // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*"); // allow requests from any origin (JUST FOR DEVELOPMENT)
-  res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  setCORSHeaders(res);
 
   // Handle preflight requests
   if (req.method === "OPTIONS") {
@@ -32,40 +31,41 @@ const server = http.createServer((req, res) => {
     req.on("end", () => {
       const { url: inputUrl } = JSON.parse(body);
       const parsedUrl = new URL(inputUrl);
+
+      // server response if URL is not within allowed hostnames
+      const allowedHostnames = ["localhost", "127.0.0.1"]; // Add your server's IP here if needed
+      if (!allowedHostnames.includes(parsedUrl.hostname)) {
+        handleError(res, 403);
+        return;
+      }
       const pathname = path.join(__dirname, parsedUrl.pathname);
 
-      // first: error handling
-
       setTimeout(() => {
-        fs.stat(pathname, (err, stats) => {
-          if (err) {
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(
-              JSON.stringify({
-                message: "URL does not point to a file or folder",
-              })
-            );
-            return;
-          }
-
-          let message;
-          // check if URL points to a file or folder
-          if (stats.isFile()) {
-            message = `File exists: ${pathname}`;
-          } else if (stats.isDirectory()) {
-            message = `Directory exists: ${pathname}`;
-          } else {
-            message = "URL does not point to a file or folder that exists.";
-          }
-          // send response
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ message }));
-        });
-      }, 500);
+        fs.stat(
+          pathname,
+          (err, stats) => {
+            // server response if URL does not point to a file or folder
+            if (err) {
+              handleError(res, 404);
+              return;
+            }
+            // check if URL points to a file or folder
+            if (stats.isFile() || stats.isDirectory()) {
+              // server response if URL points to a file or folder
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  code: 200,
+                  type: stats.isFile() ? "file" : "directory",
+                  path: pathname,
+                })
+              );
+            }
+          },
+          500 // simulate server delay
+        );
+      });
     });
-  } else {
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("Not Found");
   }
 });
 

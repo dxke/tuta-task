@@ -13,10 +13,15 @@ module.exports = {
     }),
   ],
   output: {
-    filename: "[name].bundle.js",
     path: path.resolve(__dirname, "dist"),
+    filename: "bundle.js",
     clean: true,
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: "./src/client/index.html",
+    }),
+  ],
   module: {
     rules: [
       {
