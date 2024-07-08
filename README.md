@@ -53,10 +53,10 @@ Ergebnis: _File exists: ..._
 
 Ergebnis: _URL does not point to a file or folder_
 
-### any other URL other than 127.0.0.1 or localhost
+### any other URL
 
-Ergebnis: _URL does not match the server's hostname._
+Ergebnis: URL does not match the server's hostname.
 
-### anyinputthatsnotaURL
+### any input that's not a URL
 
 Ergebnis: _Invalid URL format_
