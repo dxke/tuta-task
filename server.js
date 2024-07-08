@@ -12,8 +12,6 @@ const server = http.createServer((req, res) => {
   // add a delay to simulate server response time
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   delay(500).then(() => {
-    // Code to be executed after the delay
-
     // Set CORS headers
     setCORSHeaders(res);
 
