@@ -3,70 +3,68 @@ const http = require("http");
 const fs = require("fs");
 const url = require("url");
 const path = require("path");
+const { setCORSHeaders, handleError } = require("./serverModules.js");
 
 const PORT = 8000;
 
 // create a server
 const server = http.createServer((req, res) => {
-  // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*"); // allow requests from any origin (JUST FOR DEVELOPMENT)
-  res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  // add a delay to simulate server response time
+  let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  delay(500).then(() => {
+    // Set CORS headers
+    setCORSHeaders(res);
 
-  // Handle preflight requests
-  if (req.method === "OPTIONS") {
-    res.writeHead(204);
-    res.end();
-    return;
-  }
+    // Handle preflight requests
+    if (req.method === "OPTIONS") {
+      res.writeHead(204);
+      res.end();
+      return;
+    }
 
-  // handle POST request to /check-url
-  if (req.method === "POST" && req.url === "/check-url") {
-    // read the body of the request
-    let body = "";
-    req.on("data", (chunk) => {
-      body += chunk.toString();
-    });
+    // handle POST request to /check-url
+    if (req.method === "POST" && req.url === "/check-url") {
+      // read the body of the request
+      let body = "";
+      req.on("data", (chunk) => {
+        body += chunk.toString();
+      });
 
-    // parse the URL and construct the pathname
-    req.on("end", () => {
-      const { url: inputUrl } = JSON.parse(body);
-      const parsedUrl = new URL(inputUrl);
-      const pathname = path.join(__dirname, parsedUrl.pathname);
+      // parse the URL and construct the pathname
+      req.on("end", () => {
+        const { url: inputUrl } = JSON.parse(body);
+        const parsedUrl = new URL(inputUrl);
 
-      // first: error handling
+        // server response if URL is not within allowed hostnames
+        const allowedHostnames = ["localhost", "127.0.0.1"]; // Add your server's IP here if needed
+        if (!allowedHostnames.includes(parsedUrl.hostname)) {
+          handleError(res, 403);
+          return;
+        }
+        const pathname = path.join(__dirname, parsedUrl.pathname);
 
-      setTimeout(() => {
         fs.stat(pathname, (err, stats) => {
+          // server response if URL does not point to a file or folder
           if (err) {
+            handleError(res, 404);
+            return;
+          }
+          // check if URL points to a file or folder
+          if (stats.isFile() || stats.isDirectory()) {
+            // server response if URL points to a file or folder
             res.writeHead(200, { "Content-Type": "application/json" });
             res.end(
               JSON.stringify({
-                message: "URL does not point to a file or folder",
+                code: 200,
+                type: stats.isFile() ? "file" : "directory",
+                path: pathname,
               })
             );
-            return;
           }
-
-          let message;
-          // check if URL points to a file or folder
-          if (stats.isFile()) {
-            message = `File exists: ${pathname}`;
-          } else if (stats.isDirectory()) {
-            message = `Directory exists: ${pathname}`;
-          } else {
-            message = "URL does not point to a file or folder that exists.";
-          }
-          // send response
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ message }));
         });
-      }, 500);
-    });
-  } else {
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("Not Found");
-  }
+      });
+    }
+  });
 });
 
 // listen for requests
